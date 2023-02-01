@@ -13,9 +13,19 @@ sudo apt install build-essential curl file git
 sudo apt-get install curl
 
 #---------------------------
-# PIP
+# PIP (for installing Python3 packages)
 #---------------------------
 sudo apt install python3-pip
+
+#---------------------------
+# MAKE (used to help compile C programs with Makfiles)
+#---------------------------
+sudo apt install make -y
+
+#---------------------------
+# CHECK (For unit testing C programs)
+#---------------------------
+sudo apt-get install check
 
 #---------------------------
 # GIT
