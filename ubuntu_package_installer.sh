@@ -5,31 +5,40 @@
 # Perform initial update/upgrade
 sudo apt update && sudo apt dist-upgrade -y
 
-sudo apt install build-essential curl file git
+#---------------------------------------------------------------
+# Name:        | Build-Essential
+# Description: | Meta-packages necessary for compiling software
+#---------------------------------------------------------------
+sudo apt install build-essential
 
-#---------------------------
-# CURL
-#---------------------------
+#---------------------------------------------------------------
+# Name:        | Curl
+# Description: | Command-line tool to transfer data to or from a server
+#---------------------------------------------------------------
 sudo apt-get install curl
 
-#---------------------------
-# PIP (for installing Python3 packages)
-#---------------------------
+#---------------------------------------------------------------
+# Name:        | Pip
+# Description: | 3rd-party package manager for Python modules
+#---------------------------------------------------------------
 sudo apt install python3-pip
 
-#---------------------------
-# MAKE (used to help compile C programs with Makfiles)
-#---------------------------
+#---------------------------------------------------------------
+# Name:        | Make
+# Description: | Used to build executable programs and libraries from source code
+#---------------------------------------------------------------
 sudo apt install make -y
 
-#---------------------------
-# CHECK (For unit testing C programs)
-#---------------------------
+#---------------------------------------------------------------
+# Name:        | Check
+# Description: | Unit testing framework for C
+#---------------------------------------------------------------
 sudo apt-get install check
 
-#---------------------------
-# GIT
-#---------------------------
+#---------------------------------------------------------------
+# Name:        | Git
+# Description: | Distributed version control system for developers
+#---------------------------------------------------------------
 
 # 1. Install Git
 sudo apt-get install git-all
@@ -40,9 +49,10 @@ git config --global user.name "Nick Barnes"
 # 3. Configure email
 git config --global user.email "nick.a.barnes44@gmail.com"
 
-#---------------------------
-# VS CODE
-#---------------------------
+#---------------------------------------------------------------
+# Name:        | VS Code
+# Description: | Source-code editor made by Microsoft
+#---------------------------------------------------------------
 
 # 1. Update the packages index and install dependencies
 sudo apt install software-properties-common apt-transport-https wget -y
@@ -56,14 +66,16 @@ sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/v
 # 4. Install VS Code
 sudo apt install code
 
-#---------------------------
-# DISCORD
-#---------------------------
+#---------------------------------------------------------------
+# Name:        | Discord
+# Description: | Voice, video, and text chat app
+#---------------------------------------------------------------
 sudo snap install discord
 
-#---------------------------
-# SPOTIFY
-#---------------------------
+#---------------------------------------------------------------
+# Name:        | Spotify
+# Description: | Music streaming service provider
+#---------------------------------------------------------------
 
 # 1. Configure the debian repository
 curl -sS https://download.spotify.com/debian/pubkey_7A3A762FAFD4A51F.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
@@ -72,9 +84,10 @@ echo "deb http://repository.spotify.com stable non-free" | sudo tee /etc/apt/sou
 # 2. Install Spotify
 sudo apt-get update && sudo apt-get install spotify-client
 
-#---------------------------
-# ZSH
-#---------------------------
+#---------------------------------------------------------------
+# Name:        | ZSH
+# Description: | An extended version of Bash (Bourne Shell)
+#---------------------------------------------------------------
 
 # 1. Install ZSH
 sudo apt install zsh
