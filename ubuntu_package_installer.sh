@@ -9,19 +9,19 @@ sudo apt update && sudo apt dist-upgrade -y
 # Name:        | Build-Essential
 # Description: | Meta-packages necessary for compiling software
 #---------------------------------------------------------------
-sudo apt install build-essential
+sudo apt install build-essential -y
 
 #---------------------------------------------------------------
 # Name:        | Curl
 # Description: | Command-line tool to transfer data to or from a server
 #---------------------------------------------------------------
-sudo apt-get install curl
+sudo apt-get install curl -y
 
 #---------------------------------------------------------------
 # Name:        | Pip
 # Description: | 3rd-party package manager for Python modules
 #---------------------------------------------------------------
-sudo apt install python3-pip
+sudo apt install python3-pip -y
 
 #---------------------------------------------------------------
 # Name:        | Make
@@ -33,7 +33,7 @@ sudo apt install make -y
 # Name:        | Check
 # Description: | Unit testing framework for C
 #---------------------------------------------------------------
-sudo apt-get install check
+sudo apt-get install check -y
 
 #---------------------------------------------------------------
 # Name:        | Git
@@ -41,7 +41,7 @@ sudo apt-get install check
 #---------------------------------------------------------------
 
 # 1. Install Git
-sudo apt-get install git-all
+sudo apt-get install git-all -y
 
 # 2. Configure user name
 git config --global user.name "Nick Barnes"
@@ -64,13 +64,13 @@ wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add
 sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
 
 # 4. Install VS Code
-sudo apt install code
+sudo apt install code -y
 
 #---------------------------------------------------------------
 # Name:        | Discord
 # Description: | Voice, video, and text chat app
 #---------------------------------------------------------------
-sudo snap install discord
+sudo snap install discord -y
 
 #---------------------------------------------------------------
 # Name:        | Spotify
@@ -90,7 +90,7 @@ sudo apt-get update && sudo apt-get install spotify-client
 #---------------------------------------------------------------
 
 # 1. Install ZSH
-sudo apt install zsh
+sudo apt install zsh -y
 
 # 2. Make it the default shell
 chsh -s $(which zsh)
