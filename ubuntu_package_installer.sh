@@ -36,6 +36,12 @@ sudo apt install make -y
 sudo apt-get install check -y
 
 #---------------------------------------------------------------
+# Name:        | Ruby
+# Description: | Open source programming language (Used for colorls)
+#---------------------------------------------------------------
+sudo apt install ruby ruby-dev ruby-colorize
+
+#---------------------------------------------------------------
 # Name:        | Git
 # Description: | Distributed version control system for developers
 #---------------------------------------------------------------
