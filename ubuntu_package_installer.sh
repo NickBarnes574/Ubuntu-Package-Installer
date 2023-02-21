@@ -30,16 +30,16 @@ sudo apt install python3-pip -y
 sudo apt install make -y
 
 #---------------------------------------------------------------
-# Name:        | Check
-# Description: | Unit testing framework for C
+# Name:        | CMake
+# Description: | Used to build executable programs and libraries from source code
 #---------------------------------------------------------------
-sudo apt-get install check -y
+sudo apt-get -y install cmake
 
 #---------------------------------------------------------------
-# Name:        | Ruby
-# Description: | Open source programming language (Used for colorls)
+# Name:        | CUnit
+# Description: | Unit testing framework for C
 #---------------------------------------------------------------
-sudo apt install ruby ruby-dev ruby-colorize
+sudo apt-get install libcunit1 libcunit1-doc libcunit1-dev
 
 #---------------------------------------------------------------
 # Name:        | Git
