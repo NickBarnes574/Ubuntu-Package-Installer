@@ -36,6 +36,18 @@ sudo apt install make -y
 sudo apt-get -y install cmake
 
 #---------------------------------------------------------------
+# Name:        | Clang
+# Description: | Alternative C compiler for use with CMake
+#---------------------------------------------------------------
+sudo apt install -y clang
+
+#---------------------------------------------------------------
+# Name:        | Clang Tidy
+# Description: | Static analyzer tool for C
+#---------------------------------------------------------------
+sudo apt install -y clang-tidy
+
+#---------------------------------------------------------------
 # Name:        | CUnit
 # Description: | Unit testing framework for C
 #---------------------------------------------------------------
@@ -71,6 +83,62 @@ sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/v
 
 # 4. Install VS Code
 sudo apt install code -y
+
+#---------------------------------------------------------------
+# Name:        | Sublime Text 4
+# Description: | Source-code editor for Windows, MacOS and Linux
+# Tutorial: https://linuxhint.com/install-sublime-text-4-ubuntu/
+#---------------------------------------------------------------
+
+# 1. Download the Sublime Text GPG key
+wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo tee /etc/apt/trusted.gpg.d/sublimehq-pub.asc
+
+# 2. Update the APT package repository cache
+sudo apt update
+
+# 3. Install the apt-transport-https package
+sudo apt-get install apt-transport-https -y
+
+# 4. Add the official package repository
+echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
+
+# 5. Update the APT package repository cache again
+sudo apt update
+
+# 6. Install the latest version of Sublime Text
+sudo apt install sublime-text -y
+
+#---------------------------------------------------------------
+# Name:        | LaTex
+# Description: | Software system for preparing scientific documents
+# Installing LaTex for Sublime Text: https://rowannicholls.github.io/sublime_text/latex.html
+#---------------------------------------------------------------
+
+# 1. Install the base version of LaTex
+sudo apt install -y texlive-latex-base
+
+# 2. install extras
+sudo apt install -y dvipng
+sudo apt install -y texlive-latex-extra
+sudo apt install -y texlive-fonts-recommended
+sudo apt install -y texlive-pictures
+sudo apt install -y texlive-font-utils  # Needed for eps figures to work
+sudo apt install -y latexmk  # Needed for running Latex in Sublime Text
+sudo apt install -y texlive-lang-greek
+
+#---------------------------------------------------------------
+# Name:        | ImageMagick (For use with LaTex)
+# Description: | Display, create, convert, and modify images
+#---------------------------------------------------------------
+cd ~/Downloads
+wget https://www.imagemagick.org/download/ImageMagick.tar.gz
+tar xvzf ImageMagick.tar.gz
+cd ImageMagick-7.0.*/
+./configure
+make
+sudo make install
+sudo ldconfig /usr/local/lib
+cd ~ # Return to home directory when finished
 
 #---------------------------------------------------------------
 # Name:        | Discord
