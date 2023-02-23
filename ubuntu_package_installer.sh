@@ -42,6 +42,12 @@ sudo apt-get -y install cmake
 sudo apt install -y clang
 
 #---------------------------------------------------------------
+# Name:        | Clang Format
+# Description: | Formatting tool for C
+#---------------------------------------------------------------
+sudo apt install -y clang-format
+
+#---------------------------------------------------------------
 # Name:        | Clang Tidy
 # Description: | Static analyzer tool for C
 #---------------------------------------------------------------
