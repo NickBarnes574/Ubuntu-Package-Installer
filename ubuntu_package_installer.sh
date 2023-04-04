@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# NOTE: This script assumes you are running Ubuntu Linux 22.04
+# NOTE: This script assumes you are running Ubuntu Linux 20.04
 
 # Perform initial update/upgrade
 sudo apt update && sudo apt dist-upgrade -y
