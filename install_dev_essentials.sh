@@ -71,6 +71,7 @@ base_install()
     get_cunit
     get_vscode
     get_git
+    get_posix_cac
 
     # Setup aliases
     set_aliases
@@ -481,7 +482,6 @@ update_vscode_settings()
     "C_Cpp.clang_format_sortIncludes": true,
     "C_Cpp.formatting": "clangFormat",
     "security.workspace.trust.untrustedFiles": "open",
-    "workbench.startupEditor": "none",
     "editor.rulers": [
         80,
         120
@@ -569,6 +569,20 @@ update_vscode_user_snippets()
     },
 }'
         echo "$header_file_snippets" > ~/.config/Code/User/snippets/h.code-snippets
+    fi
+}
+
+get_posix_cac()
+{
+    option=''
+    while [ "$option" != "y" ] && [ "$option" != "n" ]
+    do
+        print_style "Do you want to install CAC credentials? [y/n]\n" "info"
+        read -r option
+    done
+    
+    if [ "$option" = "y" ]; then
+        ./install_posix_cac.sh
     fi
 }
 
