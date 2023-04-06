@@ -33,6 +33,9 @@ print_style() {
         "danger")
             COLOR="91m"; # red
             ;;
+        "header")
+            COLOR="35m"; # magenta
+            ;;
         *)
             COLOR="0m"; # default color
             ;;
@@ -56,9 +59,7 @@ print_description()
 base_install()
 {
     # Perform initial setup
-    # sudo apt update && sudo apt dist-upgrade -y
-    setup_ssh_keys
-    get_zsh
+    sudo apt update && sudo apt dist-upgrade -y
 
     # Install base packages
     get_build_essential
@@ -71,12 +72,18 @@ base_install()
     get_cunit
     get_vscode
     get_git
+
+    clear
+
+    final_check
+
+    set_up_git
     get_posix_cac
+    setup_ssh_keys
+    get_zsh
 
     # Setup aliases
     set_aliases
-
-    final_check
 }
 
 print_check()
@@ -96,7 +103,7 @@ get_build_essential()
 {
     if ! dpkg -s build-essential >/dev/null 2>&1; then
         print_description "Build-Essential" "Meta-packages necessary for compiling software"
-        sudo apt install build-essential -y
+        sudo apt-get install -qq build-essential -y
     fi
 }
 
@@ -108,7 +115,7 @@ get_make()
 {
     if ! dpkg -s make >/dev/null 2>&1; then
         print_description "Make" "Used to build executable programs and libraries from source code"
-        sudo apt install make -y
+        sudo apt-get install -qq make -y
     fi
 }
 
@@ -120,7 +127,7 @@ get_cmake()
 {
     if ! dpkg -s cmake >/dev/null 2>&1; then
         print_description "CMake" "Used to build executable programs and libraries from source code"
-        sudo apt install cmake -y
+        sudo apt-get install -qq cmake -y
     fi
 }
 
@@ -132,7 +139,7 @@ get_curl()
 {
     if ! dpkg -s curl >/dev/null 2>&1; then
         print_description "Curl" "Command-line tool to transfer data to or from a server"
-        sudo apt-get install curl -y
+        sudo apt-get install -qq curl -y
     fi
 }
 
@@ -144,35 +151,35 @@ get_pip()
 {
     if ! dpkg -s python3-pip >/dev/null 2>&1; then
         print_description "Pip" "3rd-party package manager for Python modules"
-        sudo apt install python3-pip -y
+        sudo apt-get install -qq python3-pip -y
     fi
 }
 
 #---------------------------------------------------------------
 # Name:        | Clang
-# Description: | Alternative C compiler
+# Description: | LLVM-based C/C++ compiler
 # 
 # Name:        | Clang Format
-# Description: | Formatting tool for C
+# Description: | Code Formatting tool for C/C++
 #
 # Name:        | Clang Tidy
-# Description: | Static analyzer tool for C
+# Description: | Static analyzer tool for C/C++
 #---------------------------------------------------------------
 get_clang_suite()
 {
     if ! dpkg -s clang >/dev/null 2>&1; then
-        print_description "Clang" "Alternative C compiler"
-        sudo apt install -y clang
+        print_description "Clang" "LLVM-based C/C++ compiler"
+        sudo apt-get install -qq -y clang-12
     fi
 
     if ! dpkg -s clang-format >/dev/null 2>&1; then
-        print_description "Clang Format" "Formatting tool for C"
-        sudo apt install -y clang-format
+        print_description "Clang Format" "Code Formatting tool for C/C++"
+        sudo apt-get install -qq -y clang-format
     fi
 
     if ! dpkg -s clang-tidy >/dev/null 2>&1; then
-        print_description "Clang Tidy" "Static analyzer tool for C"
-        sudo apt install -y clang-tidy
+        print_description "Clang Tidy" "Static analyzer tool for C/C++"
+        sudo apt-get install -qq -y clang-tidy
     fi
 }
 
@@ -184,7 +191,7 @@ get_cunit()
 {
     if ! dpkg -s libcunit1 libcunit1-doc libcunit1-dev >/dev/null 2>&1; then
         print_description "CUnit" "Unit testing framework for C"
-        sudo apt-get install libcunit1 libcunit1-doc libcunit1-dev
+        sudo apt-get install -qq -y libcunit1 libcunit1-doc libcunit1-dev
     fi
 }
 
@@ -194,14 +201,9 @@ get_cunit()
 #---------------------------------------------------------------
 get_vscode()
 {
-    if ! dpkg -s code >/dev/null 2>&1; then
+    if ! command -v code &> /dev/null; then
         print_description "VS Code" "Source-code editor made by Microsoft"
-
-        curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
-        sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
-        sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
-        sudo apt update
-        sudo apt install code -y
+        sudo snap install --classic code
     fi
 
     install_vscode_extensions
@@ -211,46 +213,46 @@ get_vscode()
 
 #---------------------------------------------------------------
 # Name:        | Valgrind
-# Description: | Memory leak checker for C
+# Description: | Memory management and bug detector for C
 #---------------------------------------------------------------
 get_valgrind()
 {
     if ! dpkg -s valgrind >/dev/null 2>&1; then
-        print_description "Valgrind" "Source-code editor made by Microsoft"
-        sudo apt install valgrind -y
+        print_description "Valgrind" "Memory management and bug detector for C"
+        sudo apt-get install -qq valgrind -y
     fi
 }
 
 install_vscode_extensions()
 {
-    if dpkg -s code >/dev/null 2>&1; then
+    if command -v code &> /dev/null; then
 
         # C/C++ Extension Pack
         extension="ms-vscode.cpptools-extension-pack"
-        if ! code --list-extensions | grep -q "^$extension$"; then
+        if ! code --list-extensions 2>/dev/null | grep -q "^$extension$"; then
             print_style "installing VS Code extension: C/C++ Extention Pack\n" "info"
-            code --install-extension ms-vscode.cpptools-extension-pack
+            code --install-extension ms-vscode.cpptools-extension-pack 2>/dev/null
         fi
 
         # Doxygen Documentation Generator
         extension="cschlosser.doxdocgen"
-        if ! code --list-extensions | grep -q "^$extension$"; then
+        if ! code --list-extensions 2>/dev/null | grep -q "^$extension$"; then
             print_style "installing VS Code extension: Doxygen\n" "info"
-            code --install-extension cschlosser.doxdocgen
+            code --install-extension cschlosser.doxdocgen 2>/dev/null
         fi
 
         # Python
         extension="ms-python.python"
-        if ! code --list-extensions | grep -q "^$extension$"; then
+        if ! code --list-extensions 2>/dev/null | grep -q "^$extension$"; then
             print_style "installing VS Code extension: Python\n" "info"
-            code --install-extension ms-python.python
+            code --install-extension ms-python.python 2>/dev/null
         fi
 
         # VS Code PDF
         extension="tomoki1207.pdf"
-        if ! code --list-extensions | grep -q "^$extension$"; then
+        if ! code --list-extensions 2>/dev/null | grep -q "^$extension$"; then
             print_style "installing VS Code extension: VS Code PDF\n" "info"
-            code --install-extension tomoki1207.pdf
+            code --install-extension tomoki1207.pdf 2>/dev/null
         fi
 
     else
@@ -280,13 +282,16 @@ setup_ssh_keys()
 #---------------------------------------------------------------
 get_git()
 {
-    configure=''
-
     # Check if git is already installed
     if ! dpkg -s git-all >/dev/null 2>&1; then
         print_description "Git" "Distributed version control system for developers"
-        sudo apt-get install git-all -y
+        sudo apt-get install -qq git-all -y
     fi
+}
+
+set_up_git()
+{
+    configure=''
 
     # Ask if the user wants to set up global username and email if not already configured
     while [ "$configure" != "y" ] && [ "$configure" != "n" ]
@@ -379,7 +384,7 @@ get_zsh()
             sudo apt update
 
             # Install zsh
-            sudo apt install -y zsh
+            sudo apt install -qq -y zsh
 
             # Set zsh as the default shell for the current user
             chsh -s $(which zsh)
@@ -409,7 +414,7 @@ update_vscode_settings()
 {
     custom_settings=''
 
-    if dpkg -s code >/dev/null 2>&1; then
+    if command -v code &> /dev/null; then
         custom_settings='{
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true,
@@ -439,7 +444,10 @@ update_vscode_user_snippets()
     source_file_snippets=''
     header_file_snippets=''
 
-    if dpkg -s code >/dev/null 2>&1; then
+    if command -v code &> /dev/null; then
+
+        mkdir -p ~/.config/Code/User/snippets
+
         source_file_snippets='{
 	// Place your snippets for c here. Each snippet is defined under a snippet name and has a prefix, body and 
 	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
@@ -467,7 +475,7 @@ update_vscode_user_snippets()
 		],
 		"description" : "to produce the boilerplate code for a C source file"
     },
-}'
+}'      
         echo "$source_file_snippets" > ~/.config/Code/User/snippets/c.json
 
         header_file_snippets='{
@@ -522,145 +530,152 @@ get_posix_cac()
     done
     
     if [ "$option" = "y" ]; then
+        chmod +x ./install_posix_cac.sh
         ./install_posix_cac.sh
     fi
 }
 
 final_check()
 {
-    print_check "SSH Keys"
-    # Check if SSH keys already exist
-    if [ -f ~/.ssh/id_rsa.pub ]; then
-        print_style "[OK]\n" "success"
-    else
-        print_style "[MISSING]\n" "warning"
-    fi
-
-    print_check "zsh"
-    if dpkg -s zsh >/dev/null 2>&1; then
-        print_style "[OK]\n" "success"
-    else
-        print_style "[MISSING]\n" "warning"
-    fi
+    print_style "---RUNNING SANITY CHECKS---\n\n" "info"
+    sleep 1
+    print_style "[PACKAGE NAME]                          [RESULT]  [VERSION]\n" "header"
+    print_style "-----------------------------------------------------------------------\n" "header"
 
     print_check "Build-Essential"
     if dpkg -s build-essential >/dev/null 2>&1; then
-        print_style "[OK]\n" "success"
+        local version=$(dpkg --status build-essential | grep '^Version:' | cut -d ' ' -f 2)
+        print_style "[PASS]    " "success"
+        print_style "[$version]\n" "warning"
     else
-        print_style "[MISSING]\n" "warning"
+        print_style "[FAIL]\n" "danger"
     fi
 
     print_check "Make"
     if dpkg -s make >/dev/null 2>&1; then
-        print_style "[OK]\n" "success"
+        local version=$(make --version | grep '^GNU Make' | cut -d ' ' -f 3)
+        print_style "[PASS]    " "success"
+        print_style "[$version]\n" "warning"
     else
-        print_style "[MISSING]\n" "warning"
+        print_style "[FAIL]\n" "danger"
     fi
     
     print_check "CMake"
     if dpkg -s cmake >/dev/null 2>&1; then
-        print_style "[OK]\n" "success"
+        local version=$(cmake --version | grep 'version' | cut -d ' ' -f 3)
+        print_style "[PASS]    " "success"
+        print_style "[$version]\n" "warning"
     else
-        print_style "[MISSING]\n" "warning"
+        print_style "[FAIL]\n" "danger"
     fi
 
     print_check "Valgrind"
     if dpkg -s valgrind >/dev/null 2>&1; then
-        print_style "[OK]\n" "success"
+        local version=$(valgrind --version | grep '^valgrind' | cut -d '-' -f 2)
+        print_style "[PASS]    " "success"
+        print_style "[$version]\n" "warning"
     else
-        print_style "[MISSING]\n" "warning"
+        print_style "[FAIL]\n" "danger"
     fi
 
     print_check "Curl"
     if dpkg -s curl >/dev/null 2>&1; then
-        print_style "[OK]\n" "success"
+        local version=$(curl --version | grep '^curl' | cut -d ' ' -f 2)
+        print_style "[PASS]    " "success"
+        print_style "[$version]\n" "warning"
     else
-        print_style "[MISSING]\n" "warning"
+        print_style "[FAIL]\n" "danger"
     fi
 
     print_check "Pip"
     if dpkg -s python3-pip >/dev/null 2>&1; then
-        print_style "[OK]\n" "success"
+        local version=$(pip --version | grep '^pip' | cut -d ' ' -f 2)
+        print_style "[PASS]    " "success"
+        print_style "[$version]\n" "warning"
     else
-        print_style "[MISSING]\n" "warning"
+        print_style "[FAIL]\n" "danger"
     fi
 
     print_check "Clang"
     if dpkg -s clang >/dev/null 2>&1; then
-        print_style "[OK]\n" "success"
+        local version=$(clang --version | grep version | cut -d ' ' -f 3)
+        print_style "[PASS]    " "success"
+        print_style "[$version]\n" "warning"
     else
-        print_style "[MISSING]\n" "warning"
+        print_style "[FAIL]\n" "danger"
     fi
 
     print_check "Clang Format"
     if dpkg -s clang-format >/dev/null 2>&1; then
-        print_style "[OK]\n" "success"
+        local version=$(clang-format --version | grep version | cut -d ' ' -f 3)
+        print_style "[PASS]    " "success"
+        print_style "[$version]\n" "warning"
     else
-        print_style "[MISSING]\n" "warning"
+        print_style "[FAIL]\n" "danger"
     fi
 
     print_check "Clang Tidy"
     if dpkg -s clang-tidy >/dev/null 2>&1; then
-        print_style "[OK]\n" "success"
+        local version=$(clang-tidy --version | grep version | cut -d ' ' -f 5)
+        print_style "[PASS]    " "success"
+        print_style "[$version]\n" "warning"
     else
-        print_style "[MISSING]\n" "warning"
+        print_style "[FAIL]\n" "danger"
     fi
 
     print_check "Cunit"
     if dpkg -s libcunit1 libcunit1-doc libcunit1-dev >/dev/null 2>&1; then
-        print_style "[OK]\n" "success"
+        local version=$(apt-cache policy libcunit1 | grep Installed | cut -d ' ' -f 4)
+        print_style "[PASS]    " "success"
+        print_style "[$version]\n" "warning"
     else
-        print_style "[MISSING]\n" "warning"
+        print_style "[FAIL]\n" "danger"
     fi
 
     print_check "Git"
     # Check if git is already installed
     if dpkg -s git-all >/dev/null 2>&1; then
-        print_style "[OK]\n" "success"
+        local version=$(git --version | grep version | cut -d ' ' -f 3)
+        print_style "[PASS]    " "success"
+        print_style "[$version]\n" "warning"
     else
-        print_style "[MISSING]\n" "warning"
+        print_style "[FAIL]\n" "danger"
     fi
 
     print_check "VS Code"
-    if dpkg -s code >/dev/null 2>&1; then
-        print_style "[OK]\n" "success"
+    if command -v code &> /dev/null; then
+        local version=$(code --version | head -n 1)
+        print_style "[PASS]    " "success"
+        print_style "[$version]\n" "warning"
     else
-        print_style "[MISSING]\n" "warning"
+        print_style "[FAIL]\n" "danger"
     fi
 
-    print_style "\n---START EXTENSIONS CHECK---\n" "info"
+    print_style "\n---VS CODE EXTENSIONS---\n" "info"
+
+    # Define the extensions to check for
+    extensions=(
+        "ms-vscode.cpptools-extension-pack:C/C++ Extension Pack"
+        "cschlosser.doxdocgen:Doxygen"
+        "ms-python.python:Python"
+        "tomoki1207.pdf:VS Code PDF"
+    )
+
+    # Check if each extension is installed
+    for extension in "${extensions[@]}"
+    do
+        name="${extension%%:*}"
+        display_name="${extension#*:}"
+
+        print_check "${display_name}"
+        if code --list-extensions 2>/dev/null | grep -q "^$name$"; then
+            print_style "[PASS]\n" "success"
+        else
+            print_style "[FAIL]\n" "danger"
+        fi
+    done
     
-    print_check "1. C/C++ Extension Pack"
-    extension="ms-vscode.cpptools-extension-pack"
-    if code --list-extensions | grep -q "^$extension$"; then
-        print_style "[OK]\n" "success"
-    else
-        print_style "[MISSING]\n" "warning"
-    fi
-
-    print_check "2. Doxygen"
-    extension="cschlosser.doxdocgen"
-    if code --list-extensions | grep -q "^$extension$"; then
-        print_style "[OK]\n" "success"
-    else
-        print_style "[MISSING]\n" "warning"
-    fi
-
-    print_check "3. Python"
-    extension="ms-python.python"
-    if code --list-extensions | grep -q "^$extension$"; then
-        print_style "[OK]\n" "success"
-    else
-        print_style "[MISSING]\n" "warning"
-    fi
-
-    print_check "4. VS Code PDF"
-    extension="tomoki1207.pdf"
-    if code --list-extensions | grep -q "^$extension$"; then
-        print_style "[OK]\n" "success"
-    else
-        print_style "[MISSING]\n" "warning"
-    fi
+    print_style "-----------------------------------------------------------------------\n" "header"
 }
 
 main
