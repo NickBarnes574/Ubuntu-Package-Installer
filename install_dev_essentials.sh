@@ -49,7 +49,6 @@ print_style() {
 
 print_description()
 {
-    print_style "\n              **Preparing to install package**\n" "info"
     print_style "---------------------------------------------------------------\n" "info"
     print_style "Name:        | $1\n" "info"
     print_style "Description: | $2\n" "info"
@@ -75,12 +74,11 @@ base_install()
 
     clear
 
-    final_check
+    sanity_check
 
     set_up_git
     get_posix_cac
     setup_ssh_keys
-    get_zsh
 
     # Setup aliases
     set_aliases
@@ -262,16 +260,24 @@ install_vscode_extensions()
 
 setup_ssh_keys()
 {
+    option=''
+
+    print_style "\n[SSH KEYS]------------------------------------\n" "header"
+
     # Check if SSH keys already exist
     if ! [ -f ~/.ssh/id_rsa.pub ]; then
+
         # Ask the user if they would like to create SSH keys
-        read -p "SSH keys are not installed. Would you like to create them? [y/n] " choice
+        while [ "$option" != "y" ] && [ "$option" != "n" ]
+        do
+            print_style "No SSH keys were found. Would you like to create them? [y/n]\n" "info"
+            read -r option
+        done
+
         if [ "$choice" = "y" ]; then
             # Create SSH keys
             ssh-keygen
             print_style "SSH keys created successfully!\n" "success"
-        else
-            print_style "SSH keys were not installed.\n" "info"
         fi
     fi
 }
@@ -292,6 +298,7 @@ get_git()
 set_up_git()
 {
     configure=''
+    print_style "\n[CONFIGURE GIT]-------------------------------\n" "header"
 
     # Ask if the user wants to set up global username and email if not already configured
     while [ "$configure" != "y" ] && [ "$configure" != "n" ]
@@ -340,7 +347,7 @@ configure_git()
         print_style "Please enter your git email:\n" "info"
         read -r email
 
-        print_style "Is the following information correct? [y/n]\n" "info"
+        print_style "\nIs the following information correct? [y/n]\n" "info"
         print_style "username: $name\n" "warning"
         print_style "email: $email\n" "warning"
         read -r option
@@ -368,39 +375,10 @@ configure_git()
     fi
 }
 
-get_zsh()
-{
-    option=''
-
-    if ! dpkg -s zsh >/dev/null 2>&1; then
-        while [ "$option" != "y" ] && [ "$option" != "n" ]
-        do
-            print_style "Do you want to install zsh and make it the default shell? [y/n]\n" "info"
-            read -r option
-        done
-        
-        if [ "$option" = "y" ]; then
-            # Update the package list
-            sudo apt update
-
-            # Install zsh
-            sudo apt install -qq -y zsh
-
-            # Set zsh as the default shell for the current user
-            chsh -s $(which zsh)
-        fi
-    fi
-}
-
 set_aliases()
 {
     #default
     rc_file=~/.bashrc
-
-    # Create aliases for ZSH if installed, otherwise create them for BASH
-    if dpkg -s zsh >/dev/null 2>&1; then
-        rc_file=~/.zshrc
-    fi
 
     # Check if the 'valrun' alias already exists
     if ! grep -q "alias valrun='valgrind --leak-check=full'" $rc_file; then
@@ -408,6 +386,8 @@ set_aliases()
     fi
 
      # insert additional aliases here
+    
+    print_style "aliases successfully installed.\n" "info"
 }
 
 update_vscode_settings()
@@ -523,6 +503,9 @@ update_vscode_user_snippets()
 get_posix_cac()
 {
     option=''
+
+    print_style "\n[POSIX CAC]-----------------------------------\n" "header"
+
     while [ "$option" != "y" ] && [ "$option" != "n" ]
     do
         print_style "Do you want to install CAC credentials? [y/n]\n" "info"
@@ -535,7 +518,7 @@ get_posix_cac()
     fi
 }
 
-final_check()
+sanity_check()
 {
     print_style "---RUNNING SANITY CHECKS---\n\n" "info"
     sleep 1
@@ -597,8 +580,8 @@ final_check()
     fi
 
     print_check "Clang"
-    if dpkg -s clang >/dev/null 2>&1; then
-        local version=$(clang --version | grep version | cut -d ' ' -f 3)
+    if dpkg -s clang-12 >/dev/null 2>&1; then
+        local version=$(clang-12 --version | grep version | cut -d ' ' -f 3)
         print_style "[PASS]    " "success"
         print_style "[$version]\n" "warning"
     else
