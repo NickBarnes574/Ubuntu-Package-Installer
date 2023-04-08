@@ -26,6 +26,37 @@ main()
 
 base_install()
 {
+    option=''
+
+    print_style "\n[NOTICE]:\n" "warning"
+    print_style "\
+This script installs the necessary programs and extensions required to complete
+the CSD-T JQR project requirements on a Linux Ubuntu 20.04 system.
+
+The script will install the following programs:\n\n" "info"
+    print_style "\
+       [NAME]               [DESCRIPTION]
+    1. build-essential:.....Essential tools and needed to build software
+    2. make:................Used to build executable programs and libraries
+    3. cmake:...............Used to manage the build process of software
+    4. curl:................Command-line tool used to transfer data
+    5. pip:.................Package installer for Python
+    6. clang-12:............Compiler for C and C++ programming languages
+    7. clang-format:........Code Formatting tool for C/C++
+    8. clang-tidy:..........Static analyzer tool for C/C++
+    9. cunit:...............Unit testing framework for C
+    10. VS Code:............Source-code editor made by Microsoft\n"
+
+    while [ "$option" != "y" ] && [ "$option" != "n" ]
+    do
+        print_style "\ncontinue? [y/n]\n" "info"
+        read -r option
+    done
+    
+    if [ "$option" = "n" ]; then
+        echo "Exiting..."
+        exit 0
+    fi
     # Perform initial setup
     sudo apt update && sudo apt dist-upgrade -y
 
@@ -43,6 +74,7 @@ base_install()
 
     clear
 
+    chmod +x ./scripts/sanity_check.sh
     ./scripts/sanity_check.sh
 
     set_up_git
@@ -244,6 +276,7 @@ get_posix_cac()
     done
     
     if [ "$option" = "y" ]; then
+        chmod +x ./scripts/install_posix_cac.sh
         ./scripts/install_posix_cac.sh
     fi
 }

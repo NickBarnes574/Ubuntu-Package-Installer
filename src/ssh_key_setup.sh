@@ -1,4 +1,4 @@
-source utilities.sh
+source src/utilities.sh
 
 setup_ssh_keys()
 {

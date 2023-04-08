@@ -54,6 +54,4 @@ set_aliases()
     fi
 
      # insert additional aliases here
-    
-    print_style "aliases successfully installed.\n" "info"
 }

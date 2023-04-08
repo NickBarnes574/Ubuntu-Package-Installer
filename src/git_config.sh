@@ -1,4 +1,4 @@
-source utilities.sh
+source src/utilities.sh
 
 set_up_git()
 {
