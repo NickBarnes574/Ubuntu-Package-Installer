@@ -1,5 +1,7 @@
+#! /bin/bash
+
 set -e # used to exit the script immediately if any errors occur
-trap 'catch $? $LINENO' EXIT
+trap "catch $? $LINENO" EXIT
 
 source src/utilities.sh
 source src/vscode_config.sh
@@ -57,20 +59,21 @@ The script will install the following programs:\n\n" "info"
         echo "Exiting..."
         exit 0
     fi
+
     # Perform initial setup
     sudo apt update && sudo apt dist-upgrade -y
 
     # Install base packages
-    get_build_essential
-    get_make
-    get_cmake
-    get_valgrind
-    get_curl
-    get_pip
-    get_clang_suite
-    get_cunit
-    get_vscode
-    get_git
+    install_build_essential
+    install_make
+    install_cmake
+    install_valgrind
+    install_curl
+    install_pip
+    install_clang_suite
+    install_cunit
+    install_vscode
+    install_git
 
     clear
 
@@ -78,7 +81,7 @@ The script will install the following programs:\n\n" "info"
     ./scripts/sanity_check.sh
 
     set_up_git
-    get_posix_cac
+    install_posix_cac
     setup_ssh_keys
 
     # Setup aliases
@@ -89,107 +92,92 @@ The script will install the following programs:\n\n" "info"
 # Name:        | Build-Essential
 # Description: | Meta-packages necessary for compiling software
 #---------------------------------------------------------------
-get_build_essential()
+install_build_essential()
 {
-    if ! dpkg -s build-essential >/dev/null 2>&1; then
-        print_description "Build-Essential" "Meta-packages necessary for compiling software"
-        sudo apt-get install -qq build-essential -y
-    fi
+    install_package_if_not_present "build-essential" "Meta-packages necessary for compiling software" "Build-Essential"
 }
 
 #---------------------------------------------------------------
 # Name:        | Make
 # Description: | Used to build executable programs and libraries from source code
 #---------------------------------------------------------------
-get_make()
+install_make()
 {
-    if ! dpkg -s make >/dev/null 2>&1; then
-        print_description "Make" "Used to build executable programs and libraries from source code"
-        sudo apt-get install -qq make -y
-    fi
+    install_package_if_not_present "make" "Used to build execuatable programs and libraries from source code" "Make"
 }
 
 #---------------------------------------------------------------
 # Name:        | CMake
 # Description: | Used to build executable programs and libraries from source code
 #---------------------------------------------------------------
-get_cmake()
+install_cmake()
 {
-    if ! dpkg -s cmake >/dev/null 2>&1; then
-        print_description "CMake" "Used to build executable programs and libraries from source code"
-        sudo apt-get install -qq cmake -y
-    fi
+    install_package_if_not_present "cmake" "Used to build executable programs and libraries from source code" "CMake"
 }
 
 #---------------------------------------------------------------
 # Name:        | Curl
 # Description: | Command-line tool to transfer data to or from a server
 #---------------------------------------------------------------
-get_curl()
+install_curl()
 {
-    if ! dpkg -s curl >/dev/null 2>&1; then
-        print_description "Curl" "Command-line tool to transfer data to or from a server"
-        sudo apt-get install -qq curl -y
-    fi
+    install_package_if_not_present "curl" "Command-line tool to transfer data to or from a server" "Curl"
 }
 
 #---------------------------------------------------------------
 # Name:        | Pip
 # Description: | 3rd-party package manager for Python modules
 #---------------------------------------------------------------
-get_pip()
+install_pip()
 {
-    if ! dpkg -s python3-pip >/dev/null 2>&1; then
-        print_description "Pip" "3rd-party package manager for Python modules"
-        sudo apt-get install -qq python3-pip -y
-    fi
+    install_package_if_not_present "python3-pip" "3rd-party package manager for Python modules" "Pip"
 }
 
 #---------------------------------------------------------------
-# Name:        | Clang
-# Description: | LLVM-based C/C++ compiler
-# 
-# Name:        | Clang Format
-# Description: | Code Formatting tool for C/C++
-#
-# Name:        | Clang Tidy
-# Description: | Static analyzer tool for C/C++
+# Name:        | Clang / Clang Format / Clang Tidy
+# Description: | LLVM-based C/C++ compiler and additional tools
 #---------------------------------------------------------------
-get_clang_suite()
+install_clang_suite()
 {
-    if ! dpkg -s clang >/dev/null 2>&1; then
-        print_description "Clang" "LLVM-based C/C++ compiler"
-        sudo apt-get install -qq -y clang-12
-    fi
-
-    if ! dpkg -s clang-format >/dev/null 2>&1; then
-        print_description "Clang Format" "Code Formatting tool for C/C++"
-        sudo apt-get install -qq -y clang-format
-    fi
-
-    if ! dpkg -s clang-tidy >/dev/null 2>&1; then
-        print_description "Clang Tidy" "Static analyzer tool for C/C++"
-        sudo apt-get install -qq -y clang-tidy
-    fi
+    install_package_if_not_present "clang-12" "LLVM-based C/C++ compiler" "Clang"
+    install_package_if_not_present "clang-format" "Code Formatting tool for C/C++" "Clang Format"
+    install_package_if_not_present "clang-tidy" "Static analyzer tool for C/C++" "Clang Tidy"
 }
 
 #---------------------------------------------------------------
-# Name:        | CUnit
-# Description: | Unit testing framework for C
+# Name:        | CUnit / doc / dev
+# Description: | Unit testing framework for C, and additional documentation and files
 #---------------------------------------------------------------
-get_cunit()
+install_cunit()
 {
-    if ! dpkg -s libcunit1 libcunit1-doc libcunit1-dev >/dev/null 2>&1; then
-        print_description "CUnit" "Unit testing framework for C"
-        sudo apt-get install -qq -y libcunit1 libcunit1-doc libcunit1-dev
-    fi
+    install_package_if_not_present "libcunit1" "Unit testing framework for C" "CUnit"
+    install_package_if_not_present "libcunit1-doc" "Documentation for the Cunit framework" "Cunit Documentation"
+    install_package_if_not_present "libcunit1-dev" "Development files and header files for CUnit" "Cunit Development Files"
+}
+
+#---------------------------------------------------------------
+# Name:        | Valgrind
+# Description: | Memory management and bug detector for C
+#---------------------------------------------------------------
+install_valgrind()
+{
+    install_package_if_not_present "valgrind" "Memory management and bug detector for C" "Valgrind"
+}
+
+#---------------------------------------------------------------
+# Name:        | Git
+# Description: | Distributed version control system for developers
+#---------------------------------------------------------------
+install_git()
+{
+    install_package_if_not_present "git-all" "Distributed version control system for developers" "Git"
 }
 
 #---------------------------------------------------------------
 # Name:        | VS Code
 # Description: | Source-code editor made by Microsoft
 #---------------------------------------------------------------
-get_vscode()
+install_vscode()
 {
     if ! command -v code &> /dev/null; then
         print_description "VS Code" "Source-code editor made by Microsoft"
@@ -201,69 +189,28 @@ get_vscode()
     update_vscode_user_snippets
 }
 
-#---------------------------------------------------------------
-# Name:        | Valgrind
-# Description: | Memory management and bug detector for C
-#---------------------------------------------------------------
-get_valgrind()
-{
-    if ! dpkg -s valgrind >/dev/null 2>&1; then
-        print_description "Valgrind" "Memory management and bug detector for C"
-        sudo apt-get install -qq valgrind -y
-    fi
-}
-
 install_vscode_extensions()
 {
     if command -v code &> /dev/null; then
 
         # C/C++ Extension Pack
-        extension="ms-vscode.cpptools-extension-pack"
-        if ! code --list-extensions 2>/dev/null | grep -q "^$extension$"; then
-            print_style "installing VS Code extension: C/C++ Extention Pack\n" "info"
-            code --install-extension ms-vscode.cpptools-extension-pack 2>/dev/null
-        fi
+        install_extension_if_not_present "ms-vscode.cpptools-extension-pack" "C/C++ Extention Pack"
 
         # Doxygen Documentation Generator
-        extension="cschlosser.doxdocgen"
-        if ! code --list-extensions 2>/dev/null | grep -q "^$extension$"; then
-            print_style "installing VS Code extension: Doxygen\n" "info"
-            code --install-extension cschlosser.doxdocgen 2>/dev/null
-        fi
+        install_extension_if_not_present "cschlosser.doxdocgen" "Doxygen"
 
         # Python
-        extension="ms-python.python"
-        if ! code --list-extensions 2>/dev/null | grep -q "^$extension$"; then
-            print_style "installing VS Code extension: Python\n" "info"
-            code --install-extension ms-python.python 2>/dev/null
-        fi
+        install_extension_if_not_present "ms-python.python" "Python"
 
         # VS Code PDF
-        extension="tomoki1207.pdf"
-        if ! code --list-extensions 2>/dev/null | grep -q "^$extension$"; then
-            print_style "installing VS Code extension: VS Code PDF\n" "info"
-            code --install-extension tomoki1207.pdf 2>/dev/null
-        fi
+        install_extension_if_not_present "tomoki1207.pdf" "VS Code PDF"
 
     else
         print_style "VS Code is not installed. Cannot install VS Code extensions!\n" "danger"
     fi
 }
 
-#---------------------------------------------------------------
-# Name:        | Git
-# Description: | Distributed version control system for developers
-#---------------------------------------------------------------
-get_git()
-{
-    # Check if git is already installed
-    if ! dpkg -s git-all >/dev/null 2>&1; then
-        print_description "Git" "Distributed version control system for developers"
-        sudo apt-get install -qq git-all -y
-    fi
-}
-
-get_posix_cac()
+install_posix_cac()
 {
     option=''
 
@@ -278,6 +225,29 @@ get_posix_cac()
     if [ "$option" = "y" ]; then
         chmod +x ./scripts/install_posix_cac.sh
         ./scripts/install_posix_cac.sh
+    fi
+}
+
+install_package_if_not_present()
+{
+    local package_name="$1"
+    local description="$2"
+    local display_name="$3"
+
+    if ! dpkg -s "$package_name" >/dev/null 2>&1; then
+        print_description "$display_name" "$description"
+        sudo apt-get install -qq "$package_name" -y
+    fi
+}
+
+install_extension_if_not_present()
+{
+    local extension="$1"
+    local description="$2"
+
+    if ! code --list-extensions 2>/dev/null | grep -q "^$extension$"; then
+        print_style "installing VS Code extension: $description\n" "info"
+        code --install-extension "$extension" 2>/dev/null
     fi
 }
 

@@ -63,7 +63,7 @@ sanity_check()
 
     print_check "Clang"
     if dpkg -s clang-12 >/dev/null 2>&1; then
-        local version=$(clang-12 --version | grep version | cut -d ' ' -f 3)
+        local version=$(clang-12 --version | grep version | cut -d ' ' -f 4 | cut -d '-' -f 1)
         print_style "[PASS]    " "success"
         print_style "[$version]\n" "warning"
     else
@@ -72,7 +72,7 @@ sanity_check()
 
     print_check "Clang Format"
     if dpkg -s clang-format >/dev/null 2>&1; then
-        local version=$(clang-format --version | grep version | cut -d ' ' -f 3)
+        local version=$(clang-format --version | grep version | cut -d ' ' -f 3 | cut -d '-' -f 1)
         print_style "[PASS]    " "success"
         print_style "[$version]\n" "warning"
     else
@@ -116,7 +116,8 @@ sanity_check()
         print_style "[FAIL]\n" "danger"
     fi
 
-    print_style "\n---VS CODE EXTENSIONS---\n" "info"
+    print_style "\n[EXTENSION]                          [RESULT]\n" "header"
+    print_style "-----------------------------------------------------------------------\n" "header"
 
     # Define the extensions to check for
     extensions=(
@@ -139,8 +140,6 @@ sanity_check()
             print_style "[FAIL]\n" "danger"
         fi
     done
-    
-    print_style "-----------------------------------------------------------------------\n" "header"
 }
 
 sanity_check
