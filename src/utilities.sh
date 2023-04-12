@@ -38,7 +38,7 @@ print_check()
 {
     local message="$1"
     local message_length=${#message}
-    local padding_length=$((40 - message_length))
+    local padding_length=$((25 - message_length))
 
     print_style "$message$(printf '%.0s.' $(seq 1 $padding_length))" "info"
 }

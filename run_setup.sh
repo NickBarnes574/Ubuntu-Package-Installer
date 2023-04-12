@@ -77,9 +77,13 @@ The script will install the following programs:\n\n" "info"
 
     clear
 
-    chmod +x ./scripts/sanity_check.sh
-    ./scripts/sanity_check.sh
+    # Verify everything was installed correctly
+    chmod +x ./scripts/run_version_check.sh
+    cd scripts
+    ./run_version_check.sh
+    cd ..
 
+    # optional configurations/installations
     set_up_git
     install_posix_cac
     setup_ssh_keys

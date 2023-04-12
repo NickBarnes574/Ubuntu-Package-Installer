@@ -19,6 +19,16 @@ get_zsh()
             # Set zsh as the default shell for the current user
             chsh -s $(which zsh)
         fi
+
+        while [ "$option" != "y" ] && [ "$option" != "n" ]
+        do
+            print_style "Logout is required for changes to take effect. Logout now? [y/n]\n" "info"
+            read -r option
+        done
+
+        if [ "$option" = "y" ]; then
+            logout
+        fi
     fi
 }
 
